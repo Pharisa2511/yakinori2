@@ -17,5 +17,10 @@ class Menu extends Model
     {
         return $this->hasMany(MenuOption::class, 'menu_id');
     }
+    // ใน Menu.php
+    public function category()
+    {
+        return $this->belongsTo(Category::class, 'category_id', 'category_id');
+    }
     protected $guarded = []; // อนุญาตให้กรอกข้อมูลได้ทุกคอลัมน์ (หรือระบุรายคอลัมน์ใน $fillable)
 }

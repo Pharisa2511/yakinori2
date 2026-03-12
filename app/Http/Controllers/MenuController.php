@@ -1,14 +1,18 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use Illuminate\Http\Request;
 
 use App\Models\Category;
 use App\Models\Menu; // นำเข้า Model Menu เพื่อให้เรียกใช้ได้ง่ายขึ้น
 use App\Models\Order;
 
+
+
 class MenuController extends Controller
 {
+
     // วางฟังก์ชันของคุณไว้ในคลาสนี้ครับ
     public function showMenu($table_number)
     {
@@ -36,5 +40,15 @@ class MenuController extends Controller
 
         // 2. เรียก View ให้ตรงกับตำแหน่งใหม่ที่คุณย้ายไป (pages.summary)
         return view('pages.summary', compact('orders', 'table_number'));
+    }
+    public function showMenuByCategory($table_number, $category_id)
+    {
+        $categories = \App\Models\Category::all();
+
+        // ดึงเมนูที่ตรงกับหมวดหมู่
+        $items = \App\Models\Menu::where('category_id', $category_id)->get();
+
+        // เปลี่ยนจาก 'pages.category' เป็น 'pages.menu'
+        return view('pages.menu', compact('table_number', 'categories', 'items', 'category_id'));
     }
 }
