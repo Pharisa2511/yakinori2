@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Yakinori | Menu</title>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
         html,
         body {
@@ -18,6 +19,34 @@
             box-sizing: border-box;
         }
 
+        /* เพิ่มในส่วนของ style */
+        [x-cloak] {
+            display: none !important;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            /* พื้นหลังดำโปร่ง */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+            /* ให้ลอยอยู่บนสุดเสมอ */
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            width: 400px;
+            text-align: center;
+        }
+
         .content {
             margin-top: 0;
             padding-top: 1px;
@@ -30,13 +59,27 @@
 
         /* Sidebar ด้านซ้าย */
         .sidebar {
-            width: 150px;
-            border-right: 2px solid #ddd;
+            position: sticky;
+            /* ทำให้เลื่อนตามหน้าจอ */
+            top: 0;
+            /* ล็อคไว้ที่ขอบบน */
+            height: 100vh;
+            /* สูงเต็มหน้าจอ */
+            width: 250px;
+            /* ปรับความกว้างตามที่ต้องการ */
             display: flex;
+            /* ใช้ flexbox จัดแนวตั้ง */
             flex-direction: column;
+            /* เรียงจากบนลงล่าง */
             align-items: center;
-            padding: 20px 0;
-            background: #fff;
+            /* จัดให้อยู่กึ่งกลางแนวนอน */
+            padding: 20px 10px;
+            background-color: #fff;
+            /* หรือสีพื้นหลังของร้าน */
+            border-right: 1px solid #ddd;
+            /* เส้นขอบข้าง */
+            flex-shrink: 0;
+            /* ห้าม Sidebar หดตัว */
         }
 
         .bell-section {
@@ -74,23 +117,28 @@
         }
 
         .navbar {
+            position: sticky;
+            /* หรือ fixed หากต้องการให้ลอยค้างหน้าจอไม่ว่าเลื่อนไปไหน */
+            top: 20px;
+            /* เว้นระยะจากขอบบน 20px */
+            z-index: 9999;
+            /* ให้ลอยอยู่เหนือทุกสิ่ง */
+
             display: flex;
             justify-content: center;
-            /* จัดให้อยู่กึ่งกลาง */
             align-items: center;
-            /* จัดแนวตั้งให้อยู่กึ่งกลาง */
             gap: 30px;
-            /* ปรับระยะห่างระหว่างเมนู (ลดลงถ้าเมนูยาวเกินไป) */
             flex-wrap: nowrap;
-            /* สำคัญ: ห้ามปุ่มขึ้นบรรทัดใหม่ */
             padding: 15px 30px;
             background: rgba(0, 0, 0, 0.7);
             backdrop-filter: blur(10px);
             border-radius: 50px;
-            width: max-content;
-            /* ให้ความกว้างปรับตามเนื้อหา */
+
+            /* ปรับปรุงการจัดวาง */
+            width: fit-content;
             margin: 0 auto;
-            /* จัดให้อยู่ตรงกลางหน้าจอ */
+            left: 0;
+            right: 0;
         }
 
         .navbar a {
@@ -119,10 +167,11 @@
             @else
                 <img src="{{ asset('storage/yakinori.png') }}" style="width: 100px;">
             @endisset
-            <a href="{{ route('order.summary', ['table_number' => $table_number]) }}" style="text-decoration: none;">
-                <a href="{{ route('order.summary', ['table_number' => $table_number]) }}">
-                    <img src="{{ asset('storage/order.png') }}" style="width: 80px; margin-top: 30px; cursor: pointer;">
-                </a> </a>
+
+            <a href="{{ route('order.summary', ['table_number' => $table_number]) }}" style="margin-top: 30px;">
+                <img src="{{ asset('storage/order.png') }}" style="width: 80px; cursor: pointer;">
+            </a>
+
             <div style="margin-top: auto; text-align: center;">
                 <button onclick="callStaff('{{ $table_number ?? 'ไม่ระบุ' }}')"
                     style="background: none; border: none; cursor: pointer;">
@@ -133,7 +182,6 @@
                     <p style="font-weight: bold; margin-top: 10px;">โต๊ะที่: {{ $table_number }}</p>
                 @endisset
             </div>
-
         </div>
 
         <div class="main-wrapper">
@@ -157,6 +205,18 @@
             </div>
         </div>
     </div>
+    <div id="menuModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <h2 id="modalMenuName" style="margin-bottom: 15px;">ชื่อเมนู</h2>
+            <p id="modalMenuPrice" style="font-size: 18px; color: #ff6600; font-weight: bold;"></p>
+            <button onclick="closeMenuModal()"
+                style="margin-top: 25px; padding: 10px 30px; cursor: pointer; border-radius: 5px; border: none; background: #333; color: white;">
+                ปิด
+            </button>
+        </div>
+    </div>
+
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
@@ -181,7 +241,18 @@
                 }
             });
         }
+
+        function openMenuModal(name, price) {
+            document.getElementById('modalMenuName').innerText = name;
+            document.getElementById('modalMenuPrice').innerText = price + ' บาท';
+            document.getElementById('menuModal').style.display = 'flex';
+        }
+
+        function closeMenuModal() {
+            document.getElementById('menuModal').style.display = 'none';
+        }
     </script>
+
 </body>
 
 </html>
