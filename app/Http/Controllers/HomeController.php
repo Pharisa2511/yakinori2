@@ -10,8 +10,7 @@ class HomeController extends Controller
     public function index()
     {
         // ดึงข้อมูลโต๊ะทั้งหมดจาก Model Table เรียงตามลำดับเลขโต๊ะ
-        $tables = \App\Models\Table::all();
-
+        $tables = Table::all();
         // ส่งตัวแปร $tables ไปที่ไฟล์หน้าเว็บ
         return view('pages.welcome', compact('tables'));
     }

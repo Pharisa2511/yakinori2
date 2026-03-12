@@ -11,5 +11,9 @@ class Table extends Model
 
     // แต่ถ้าตารางใน Database ของคุณชื่ออื่น (เช่น my_tables)
     // ให้เพิ่มบรรทัดนี้:
-    // protected $table = 'my_tables';
+    protected $table = 'tables';
+    public $incrementing = false; // ถ้าไม่ใช่ auto-increment ให้ใส่ false
+    protected $keyType = 'string'; // ถ้าเป็น string ให้ใส่ 'string'
+    protected $guarded = []; // อนุญาตให้กรอกข้อมูลได้ทุกคอลัมน์ (หรือระบุรายคอลัมน์ใน $fillable)
 }
+
