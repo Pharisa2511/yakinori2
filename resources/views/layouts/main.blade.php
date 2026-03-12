@@ -205,14 +205,33 @@
             </div>
         </div>
     </div>
-    <div id="menuModal" class="modal-overlay" style="display: none;">
-        <div class="modal-content">
-            <h2 id="modalMenuName" style="margin-bottom: 15px;">ชื่อเมนู</h2>
-            <p id="modalMenuPrice" style="font-size: 18px; color: #ff6600; font-weight: bold;"></p>
-            <button onclick="closeMenuModal()"
-                style="margin-top: 25px; padding: 10px 30px; cursor: pointer; border-radius: 5px; border: none; background: #333; color: white;">
-                ปิด
-            </button>
+    <div id="menuModal" class="modal-overlay" style="display: none; background: rgba(0,0,0,0.85);">
+        <div class="modal-content"
+            style="background: #1a1a1a; color: #e0d0a0; padding: 25px; border-radius: 15px; width: 450px; border: 1px solid #444;">
+
+            <div style="display: flex; gap: 15px; margin-bottom: 15px;">
+                <img id="modalImg" src=""
+                    style="width: 120px; height: 120px; object-fit: cover; border-radius: 8px;">
+                <div>
+                    <h2 id="modalName" style="margin: 0;"></h2>
+                    <p style="margin: 5px 0 0; opacity: 0.8;">Option</p>
+                    <div id="optionsContainer" style="margin-top: 10px;"></div>
+                </div>
+            </div>
+
+            <textarea id="modalNote" placeholder="Leave any special instructions here..."
+                style="width: 100%; height: 80px; background: #333; color: white; border: none; padding: 10px; border-radius: 5px;"></textarea>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+                <h3 id="totalPrice">Total: ฿0</h3>
+                <div>
+                    <button onclick="closeMenuModal()"
+                        style="background: transparent; color: #aaa; border: 1px solid #555; padding: 8px 15px; border-radius: 5px;">Cancel</button>
+                    <button onclick="addToOrder()"
+                        style="background: #a02020; color: white; border: none; padding: 8px 20px; border-radius: 5px;">Add
+                        to Order</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -220,6 +239,8 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
+        let basePrice = 0;
+
         function callStaff(tableNumber) {
             Swal.fire({
                 title: 'เรียกพนักงาน',
@@ -242,10 +263,42 @@
             });
         }
 
-        function openMenuModal(name, price) {
-            document.getElementById('modalMenuName').innerText = name;
-            document.getElementById('modalMenuPrice').innerText = price + ' บาท';
+        function openMenuModal(name, price, image, optionsJson) {
+            basePrice = parseFloat(price);
+
+            // ตั้งค่ารูปและชื่อ
+            document.getElementById('modalName').innerText = name;
+            document.getElementById('modalImg').src = '/storage/' + image;
+            document.getElementById('totalPrice').innerText = 'Total: ฿' + basePrice;
+
+            let container = document.getElementById('optionsContainer');
+            container.innerHTML = '';
+
+            // ตรวจสอบว่า optionsJson มีค่าหรือไม่
+            if (optionsJson && optionsJson !== '[]') {
+                try {
+                    const options = JSON.parse(optionsJson);
+                    options.forEach(opt => {
+                        let extra = parseFloat(opt.extra_price);
+                        container.innerHTML += `
+                <label style="display: block; cursor: pointer; margin-bottom: 5px;">
+                    <input type="radio" name="opt" value="${extra}"
+                           onchange="updatePrice(${extra})">
+                    ${opt.option_name} (+฿${extra})
+                </label>`;
+                    });
+                } catch (e) {
+                    console.error("Error parsing options:", e);
+                }
+            } else {
+                container.innerHTML = '<p>ไม่มีตัวเลือกเพิ่มเติม</p>';
+            }
+
             document.getElementById('menuModal').style.display = 'flex';
+        }
+
+        function updatePrice(extra) {
+            document.getElementById('totalPrice').innerText = 'Total: ฿' + (basePrice + parseFloat(extra));
         }
 
         function closeMenuModal() {

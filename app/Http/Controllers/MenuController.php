@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Category;
 use App\Models\Menu; // นำเข้า Model Menu เพื่อให้เรียกใช้ได้ง่ายขึ้น
 use App\Models\Order;
+use App\Models\MenuOption;
 
 
 
@@ -43,11 +44,12 @@ class MenuController extends Controller
     }
     public function showMenuByCategory($table_number, $category_id)
     {
-        $categories = \App\Models\Category::all();
+        $categories = Category::all();
 
         // ดึงเมนูที่ตรงกับหมวดหมู่
-        $items = \App\Models\Menu::where('category_id', $category_id)->get();
-
+        $items = Menu::with('options')
+            ->where('category_id', $category_id)
+            ->get();
         // เปลี่ยนจาก 'pages.category' เป็น 'pages.menu'
         return view('pages.menu', compact('table_number', 'categories', 'items', 'category_id'));
     }

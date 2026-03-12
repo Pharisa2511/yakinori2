@@ -6,6 +6,8 @@
     <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start;">
         @foreach ($items as $item)
             @include('components.menu-card', ['item' => $item])
+
         @endforeach
+
     </div>
 @endsection
