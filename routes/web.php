@@ -2,6 +2,5 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// ตัวอย่างที่ถูกต้อง
+Route::get('/', [App\Http\Controllers\HomeController::class, 'index']);
