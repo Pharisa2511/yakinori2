@@ -1,13 +1,21 @@
-{{-- ในไฟล์ pages/menu.blade.php --}}
 @extends('layouts.main')
 
 @section('content')
-    {{-- ตัวแม่: ต้องเพิ่ม align-items: flex-start; เพื่อหยุดการยืด --}}
-    <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start;">
-        @foreach ($items as $item)
-            @include('components.menu-card', ['item' => $item])
+    <section class="mt-n2 pt-2">
+        <div class="d-flex align-items-center gap-3 mb-4">
+            <h1 class="section-title mb-0">{{ $currentCategory->category_name ?? 'Menu' }}</h1>
+            <div class="section-lines d-flex gap-2">
+                <span></span>
+                <span></span>
+            </div>
+        </div>
 
-        @endforeach
-
-    </div>
+        <div class="row g-4">
+            @foreach ($items as $item)
+                <div class="col-12 col-sm-6 col-xl-3">
+                    @include('components.menu-card', ['item' => $item])
+                </div>
+            @endforeach
+        </div>
+    </section>
 @endsection

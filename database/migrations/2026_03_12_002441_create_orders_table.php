@@ -17,12 +17,9 @@ return new class extends Migration
             $table->string('status')->default('pending');
             $table->decimal('total_price', 10, 2)->default(0);
 
-            $table->string('table_id');
-
-            $table->foreign('table_id')
-                ->references('table_id')
-                ->on('tables')
-                ->onDelete('cascade');
+            $table->foreignId('table_id')
+                ->constrained('tables', 'table_id')
+                ->cascadeOnDelete();
         });
     }
 

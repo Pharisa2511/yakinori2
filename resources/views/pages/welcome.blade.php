@@ -1,78 +1,91 @@
 @extends('layouts.guest')
 
 @section('content')
-    <div class="hero">
-        <div class="logo-container">
-            <img src="{{ asset('storage/yakinori.png') }}" alt="Logo">
-        </div>
+    <main class="guest-shell d-flex align-items-center">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-12 col-lg-8 col-xl-6">
+                    <section class="hero-panel text-center p-4 p-md-5">
+                        <p class="hero-kicker mb-3">Japanese x Korean Dining</p>
+                        <h1 class="display-3 fw-semibold text-white mb-4">Welcome</h1>
+                        <p class="text-muted-yk fs-5 mb-5">เลือกรูปแบบการเข้าใช้งานเพื่อเริ่มต้นสั่งอาหารหรือดูประวัติออเดอร์</p>
 
-        <div class="content-wrapper">
-            <h1>Welcome</h1>
-            <div class="btn-group">
-                <a href="javascript:void(0)" class="btn" onclick="openTableModal()">ฉันเป็นลูกค้า</a>
-                <a href="javascript:void(0)" class="btn" onclick="openLoginModal()">ฉันเป็นพนักงาน</a>
+                        <div class="d-grid gap-3 col-md-8 mx-auto">
+                            <button type="button" class="btn btn-lg btn-yk-outline rounded-4 py-3" data-bs-toggle="modal"
+                                data-bs-target="#tableModal">
+                                ฉันเป็นลูกค้า
+                            </button>
+                            <button type="button" class="btn btn-lg btn-yk-primary rounded-4 py-3" data-bs-toggle="modal"
+                                data-bs-target="#loginModal">
+                                Staff Login
+                            </button>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="modal fade" id="tableModal" tabindex="-1" aria-labelledby="tableModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content hero-panel border-0">
+                <div class="modal-header border-bottom" style="border-color: rgba(242, 208, 139, 0.12) !important;">
+                    <h2 class="modal-title fs-3 hero-title" id="tableModalLabel">เลือกโต๊ะ</h2>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="row g-3">
+                        @foreach ($tables as $table)
+                            <div class="col-6 col-md-4">
+                                <a href="{{ url('/menu/' . $table->table_number) }}"
+                                    class="btn btn-yk-outline w-100 rounded-4 py-3">
+                                    โต๊ะที่ {{ $table->table_number }}
+                                </a>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <div id="tableModal" class="modal">
-        <div class="modal-content">
-            <h2>กรุณาเลือกโต๊ะ</h2>
-            <div class="table-grid">
-                @foreach ($tables as $table)
-                    <a href="{{ url('/menu/' . $table->table_number) }}" class="table-item">
-                        โต๊ะที่ {{ $table->table_number }}
-                    </a>
-                @endforeach
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content hero-panel border-0">
+                <div class="modal-header border-bottom" style="border-color: rgba(242, 208, 139, 0.12) !important;">
+                    <h2 class="modal-title fs-3 hero-title" id="loginModalLabel">Staff Login</h2>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4 p-md-5">
+                    @if (session('staff_error'))
+                        <div class="alert alert-danger rounded-4 mb-4">
+                            {{ session('staff_error') }}
+                        </div>
+                    @endif
+
+                    <form action="{{ route('staff.login') }}" method="POST" class="d-grid gap-3">
+                        @csrf
+                        <div>
+                            <label for="username" class="form-label text-muted-yk">Username</label>
+                            <input id="username" type="text" name="username" class="form-control rounded-4 py-3" required>
+                        </div>
+                        <div>
+                            <label for="password" class="form-label text-muted-yk">Password</label>
+                            <input id="password" type="password" name="password" class="form-control rounded-4 py-3" required>
+                        </div>
+                        <button type="submit" class="btn btn-yk-primary rounded-4 py-3 mt-2">Login</button>
+                    </form>
+                </div>
             </div>
-            <br>
-            <button onclick="closeModal('tableModal')"
-                style="background:none; border:none; color:gray; cursor:pointer;">ยกเลิก</button>
         </div>
     </div>
-
-    <div id="loginModal" class="modal">
-        <div class="login-card">
-            <h2>Staff Login</h2>
-            <form action="{{ url('/staff/login') }}" method="POST">
-                @csrf
-                <div class="form-group">
-                    <label>Username :</label>
-                    <input type="text" name="username" required>
-                </div>
-                <div class="form-group">
-                    <label>Password :</label>
-                    <input type="password" name="password" required>
-                </div>
-                <button type="submit" class="btn-login-submit">Login</button>
-            </form>
-            <br>
-            <button onclick="closeModal('loginModal')"
-                style="background:none; border:none; color:gray; cursor:pointer;">ยกเลิก</button>
-        </div>
-    </div>
-
-    <script>
-        // ฟังก์ชันเปิด Popup เลือกโต๊ะ
-        function openTableModal() {
-            document.getElementById("tableModal").style.display = "block";
-        }
-
-        // ฟังก์ชันเปิด Popup Login พนักงาน
-        function openLoginModal() {
-            document.getElementById("loginModal").style.display = "block";
-        }
-
-        // ฟังก์ชันปิด Popup (ใช้ร่วมกันได้โดยส่ง ID)
-        function closeModal(modalId) {
-            document.getElementById(modalId).style.display = "none";
-        }
-
-        // ปิดเมื่อคลิกนอกพื้นที่ Popup
-        window.onclick = function(event) {
-            if (event.target.className === 'modal') {
-                event.target.style.display = "none";
-            }
-        }
-    </script>
 @endsection
+
+@push('scripts')
+    <script>
+        @if (session('staff_error'))
+            const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+            loginModal.show();
+        @endif
+    </script>
+@endpush

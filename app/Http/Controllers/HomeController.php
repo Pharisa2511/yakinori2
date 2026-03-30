@@ -2,36 +2,61 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Table;
 use App\Models\Category;
-use App\Models\Menu; // นำเข้า Model Menu เพื่อให้เรียกใช้ได้ง่ายขึ้น
+use App\Models\Menu;
+use App\Models\Table;
+use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
-
-    // 1. หน้าเมนู (ใช้แสดงอาหาร)
     public function showMenu($table_number)
     {
         $categories = Category::all();
         $recommended = Menu::inRandomOrder()->limit(4)->get();
+
         return view('pages.main', compact('table_number', 'categories', 'recommended'));
     }
 
     public function index()
     {
-        // ดึงข้อมูลโต๊ะทั้งหมดจาก Model Table เรียงตามลำดับเลขโต๊ะ
-        $tables = Table::all();
-        // ส่งตัวแปร $tables ไปที่ไฟล์หน้าเว็บ
+        $tables = Table::query()
+            ->orderBy('table_number')
+            ->get();
+
         return view('pages.welcome', compact('tables'));
     }
 
     public function selectTable(Request $request)
     {
-        $table = $request->table;
+        return redirect('/menu/' . $request->table);
+    }
 
-        // แก้จาก redirect('/menu?table=' . $table)
-        // เป็นการส่งไปที่ URL: /menu/2 โดยตรง
-        return redirect('/menu/' . $table);
+    public function staffLogin(Request $request)
+    {
+        $credentials = $request->validate([
+            'username' => ['required', 'string'],
+            'password' => ['required', 'string'],
+        ]);
+
+        if ($credentials['username'] !== 'A' || $credentials['password'] !== '1234') {
+            return redirect('/')->with('staff_error', 'คุณไม่ใช่พนักงาน');
+        }
+
+        $request->session()->put('staff_logged_in', true);
+
+        return redirect()->route('staff.history');
+    }
+
+    public function staffHistory(Request $request)
+    {
+        if (!$request->session()->get('staff_logged_in')) {
+            return redirect('/')->with('staff_error', 'กรุณาเข้าสู่ระบบสำหรับพนักงานก่อน');
+        }
+
+        $tables = Table::query()
+            ->orderBy('table_number')
+            ->get();
+
+        return view('pages.staff-history', compact('tables'));
     }
 }

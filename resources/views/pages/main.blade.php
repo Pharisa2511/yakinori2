@@ -1,26 +1,25 @@
 @extends('layouts.main')
 
 @section('content')
-
-    {{-- ส่วนหัวข้อและเส้นขีด --}}
-    <div class="recommended-header" style="display: flex; align-items: center; gap: 15px; margin: 20px 0; margin-left: 20px;">
-        <h1 style="margin: 0; white-space: nowrap; font-size: 24px;">เมนูแนะนำ</h1>
-        <div style="display: flex; flex-direction: row; gap: 4px; width: 200px;">
-            <div style="height: 2px; background-color: #ff6600; width: 100%;"></div>
-            <div style="height: 2px; background-color: #ff6600; width: 100%;"></div>
+    <section class="mt-n2 pt-2">
+        <div class="d-flex align-items-center gap-3 mb-4">
+            <h1 class="section-title mb-0">เมนูแนะนำ</h1>
+            <div class="section-lines d-flex gap-2">
+                <span></span>
+                <span></span>
+            </div>
         </div>
-    </div>
 
-    {{-- ส่วนแสดงรายการเมนู (วนลูปแค่ครั้งเดียว) --}}
-    @if (isset($recommended) && $recommended->isNotEmpty())
-        {{-- ในหน้า pages/main.blade.php หรือ menu.blade.php --}}
-        <div class="recommended-list" style="display: flex; gap: 20px; padding: 20px; overflow-x: auto;">
-            @foreach ($recommended as $item)
-                @include('components.menu-card', ['item' => $item])
-            @endforeach
-        </div>
-    @else
-        <p style="padding: 20px;">ไม่มีเมนูแนะนำในขณะนี้</p>
-    @endif
-
+        @if (isset($recommended) && $recommended->isNotEmpty())
+            <div class="row g-4">
+                @foreach ($recommended as $item)
+                    <div class="col-12 col-sm-6 col-xl-3">
+                        @include('components.menu-card', ['item' => $item])
+                    </div>
+                @endforeach
+            </div>
+        @else
+            <div class="alert alert-light border rounded-4">ยังไม่มีเมนูแนะนำในขณะนี้</div>
+        @endif
+    </section>
 @endsection

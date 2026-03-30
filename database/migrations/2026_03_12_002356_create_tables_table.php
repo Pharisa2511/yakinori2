@@ -13,7 +13,7 @@ return new class extends Migration
     {
        Schema::create('tables', function (Blueprint $table) {
 
-            $table->string('table_id')->primary();
+            $table->id('table_id');
             $table->integer('table_number')->unique();
             $table->string('status')->default('available');
         });

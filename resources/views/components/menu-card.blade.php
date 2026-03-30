@@ -1,36 +1,20 @@
-<div onclick="openMenuModal(
+<button type="button"
+    onclick="openMenuModal(
+        '{{ $item->menu_id }}',
         '{{ addslashes($item->menu_name) }}',
         '{{ $item->price }}',
-        '{{ $item->image }}',
+        '{{ route('menu.image', ['menu_id' => $item->menu_id]) }}',
         '{{ addslashes(json_encode($item->options)) }}'
     )"
-    style="
-        cursor: pointer; /* เมาส์เปลี่ยนเป็นรูปมือเมื่อชี้ */
-        background-color: #fff;
-        border: 1px solid #ddd;
-        border-radius: 10px;
-        padding: 10px;
-        margin: 5px;
-        width: 220px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        text-align: center;
-        transition: transform 0.2s;
-    "
-    onmouseover="this.style.transform='scale(1.02)'"
-    onmouseout="this.style.transform='scale(1)'">
+    class="card h-100 border-0 rounded-4 overflow-hidden text-start shadow-sm"
+    style="background: rgba(255, 251, 245, 0.94); cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease;"
+    onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 1rem 2.2rem rgba(43, 24, 15, 0.14)'"
+    onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow=''">
+    <img src="{{ route('menu.image', ['menu_id' => $item->menu_id]) }}" class="card-img-top" alt="{{ $item->menu_name }}"
+        style="height: 220px; object-fit: cover;">
 
-    <img src="{{ asset('storage/' . $item->image) }}"
-         style="width: 100%; height: 120px; object-fit: cover; border-radius: 8px;">
-
-    <div style="margin-top: 10px;">
-        <h5 style="margin: 0; font-size: 16px; color: #333; font-weight: bold;">
-            {{ $item->menu_name }}
-        </h5>
+    <div class="card-body d-flex flex-column gap-2 p-4">
+        <h3 class="h5 mb-0">{{ $item->menu_name }}</h3>
+        <p class="mb-0 fw-semibold" style="color: #de6f2d;">฿{{ number_format($item->price, 2) }}</p>
     </div>
-
-    <div style="margin-top: 5px;">
-        <p style="color: #ff6600; font-weight: bold; margin: 0; font-size: 14px;">
-            {{ number_format($item->price) }} บาท
-        </p>
-    </div>
-</div>
+</button>
